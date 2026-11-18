@@ -22,3 +22,10 @@ Rate limiting is usually a few lines of code until it is not: you need to refill
 ## The awkward edge
 
 Time is measured with `time.monotonic` by default, so wall-clock adjustments do not affect refill. But tests that depend on real elapsed time are flaky. The constructor accepts a `clock` callable, and the test suite passes a fake clock that advances explicitly. If you inject your own clock, it must never go backwards; a backwards jump is treated as zero elapsed time.
+
+## Performance
+
+The window keeps a bounded buffer, so `push` is constant time and memory does not
+grow with the length of the stream. `peak` and `trough` are linear in the window
+size, which is the trade that keeps `push` cheap.
+
